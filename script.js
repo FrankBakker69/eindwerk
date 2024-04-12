@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let ballY = 30;
     let goalX = 0;
     let goalY = 0;
-    let level = 1;
 
     // Function to set a random position for the goal
     function setRandomGoalPosition() {
@@ -54,31 +53,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const newY = obstacleY + directionY * 5;
             obstacle.style.left = Math.max(0, Math.min(maxX, newX)) + 'px';
             obstacle.style.top = Math.max(0, Math.min(maxY, newY)) + 'px';
+        });
+    }
 
-            // Check collision with ball
-            const ballRect = ball.getBoundingClientRect();
+    // Function to check collision between ball and other elements
+    function checkCollisions() {
+        const ballRect = ball.getBoundingClientRect();
+        const goalRect = goal.getBoundingClientRect();
+
+        // Check collision with goal
+        if (isColliding(ballRect, goalRect)) {
+            setRandomGoalPosition();
+        }
+
+        // Check collision with obstacles
+        obstacles.forEach(obstacle => {
             const obstacleRect = obstacle.getBoundingClientRect();
             if (isColliding(ballRect, obstacleRect)) {
-                // Display loss message and reset ball position
-                alert('Helaas, je hebt verloren! Probeer opnieuw.');
+                // Handle collision (e.g., reset ball position)
                 ballX = 30;
                 ballY = 30;
                 ball.style.left = ballX + 'px';
                 ball.style.top = ballY + 'px';
             }
         });
-    }
-
-    // Function to check collision between ball and goal
-    function checkGoalCollision() {
-        const ballRect = ball.getBoundingClientRect();
-        const goalRect = goal.getBoundingClientRect();
-        if (isColliding(ballRect, goalRect)) {
-            // Display win message and proceed to next level
-            alert(`Gefeliciteerd, je hebt level ${level} gehaald!`);
-            level++;
-            setRandomGoalPosition();
-        }
     }
 
     // Function to detect collision between two elements' rectangles
@@ -116,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         ball.style.left = ballX + 'px';
         ball.style.top = ballY + 'px';
-        checkGoalCollision();
+        checkCollisions();
     });
 
     // Set interval to move obstacles periodically
