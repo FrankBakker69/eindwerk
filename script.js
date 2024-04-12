@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const ballRect = ball.getBoundingClientRect();
             const obstacleRect = obstacle.getBoundingClientRect();
             if (isColliding(ballRect, obstacleRect)) {
-                // Display loss message and reset ball position
-                alert('Helaas, je hebt verloren! Probeer opnieuw.');
+                // Reset ball position if collision detected
                 ballX = 30;
                 ballY = 30;
                 ball.style.left = ballX + 'px';
@@ -89,6 +88,28 @@ document.addEventListener('DOMContentLoaded', function() {
             rect1.bottom < rect2.top ||
             rect1.top > rect2.bottom
         );
+    }
+
+    // Initialize the ball position ensuring it does not collide with any obstacle
+    function initializeBallPosition() {
+        let overlap = true;
+        while (overlap) {
+            // Generate random initial ball position
+            ballX = Math.floor(Math.random() * (gameContainer.clientWidth - ball.clientWidth));
+            ballY = Math.floor(Math.random() * (gameContainer.clientHeight - ball.clientHeight));
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+
+            // Check if the ball collides with any obstacle
+            overlap = false;
+            obstacles.forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                const ballRect = ball.getBoundingClientRect();
+                if (isColliding(ballRect, obstacleRect)) {
+                    overlap = true;
+                }
+            });
+        }
     }
 
     // Event listener for keyboard input
@@ -121,7 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set interval to move obstacles periodically
     setInterval(moveObstacles, 100);
-    
-    // Initialize the goal position
+
+    // Initialize the goal position and ball position
     setRandomGoalPosition();
+    initializeBallPosition();
 });
