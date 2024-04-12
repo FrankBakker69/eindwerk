@@ -7,8 +7,8 @@ body, html {
 
 #game-container {
     position: relative;
-    width: 300px;
-    height: 200px;
+    width: 400px; /* Aangepaste breedte voor kleiner speelveld */
+    height: 300px; /* Aangepaste hoogte voor kleiner speelveld */
     margin: 50px auto;
     border: 2px solid black;
 }
