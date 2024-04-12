@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let ballY = 30;
     let goalX = 0;
     let goalY = 0;
+    let level = 1;
+    let gameRunning = false; // Start the game with gameRunning set to false
 
     // Function to set a random position for the goal
     function setRandomGoalPosition() {
@@ -53,30 +55,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const newY = obstacleY + directionY * 5;
             obstacle.style.left = Math.max(0, Math.min(maxX, newX)) + 'px';
             obstacle.style.top = Math.max(0, Math.min(maxY, newY)) + 'px';
+
+            // Check collision with ball
+            if (gameRunning) { // Only check collision if game is running
+                const ballRect = ball.getBoundingClientRect();
+                const obstacleRect = obstacle.getBoundingClientRect();
+                if (isColliding(ballRect, obstacleRect)) {
+                    // Display loss message and stop the game
+                    alert('Helaas, je hebt verloren! Probeer opnieuw.');
+                    gameRunning = false;
+                }
+            }
         });
     }
 
-    // Function to check collision between ball and other elements
-    function checkCollisions() {
+    // Function to check collision between ball and goal
+    function checkGoalCollision() {
         const ballRect = ball.getBoundingClientRect();
         const goalRect = goal.getBoundingClientRect();
-
-        // Check collision with goal
         if (isColliding(ballRect, goalRect)) {
+            // Display win message and proceed to next level
+            alert(`Gefeliciteerd, je hebt level ${level} gehaald!`);
+            level++;
             setRandomGoalPosition();
         }
-
-        // Check collision with obstacles
-        obstacles.forEach(obstacle => {
-            const obstacleRect = obstacle.getBoundingClientRect();
-            if (isColliding(ballRect, obstacleRect)) {
-                // Handle collision (e.g., reset ball position)
-                ballX = 30;
-                ballY = 30;
-                ball.style.left = ballX + 'px';
-                ball.style.top = ballY + 'px';
-            }
-        });
     }
 
     // Function to detect collision between two elements' rectangles
@@ -89,37 +91,64 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // Event listener for keyboard input
+    // Event listener for keyboard input to start the game
     document.addEventListener('keydown', function(event) {
-        switch (event.key) {
-            case 'ArrowUp':
-                ballY = Math.max(ballY - 10, 0);
-                break;
-            case 'ArrowDown':
-                ballY = Math.min(ballY + 10, gameContainer.clientHeight - ball.clientHeight);
-                break;
-            case 'ArrowLeft':
-                ballX = Math.max(ballX - 10, 0);
-                break;
-            case 'ArrowRight':
-                ballX = Math.min(ballX + 10, gameContainer.clientWidth - ball.clientWidth);
-                break;
-            case 'w':
-            case 'a':
-            case 's':
-            case 'd':
-                moveGoal(event.key.toUpperCase());
-                break;
-        }
+        if (!gameRunning) { // Start the game when any key is pressed if not already running
+            gameRunning = true;
+            initializeBallPosition(); // Initialize ball position without collision with obstacles
+        } else { // Allow movement only if game is running
+            switch (event.key) {
+                case 'ArrowUp':
+                    ballY = Math.max(ballY - 10, 0);
+                    break;
+                case 'ArrowDown':
+                    ballY = Math.min(ballY + 10, gameContainer.clientHeight - ball.clientHeight);
+                    break;
+                case 'ArrowLeft':
+                    ballX = Math.max(ballX - 10, 0);
+                    break;
+                case 'ArrowRight':
+                    ballX = Math.min(ballX + 10, gameContainer.clientWidth - ball.clientWidth);
+                    break;
+                case 'w':
+                case 'a':
+                case 's':
+                case 'd':
+                    moveGoal(event.key.toUpperCase());
+                    break;
+            }
 
-        ball.style.left = ballX + 'px';
-        ball.style.top = ballY + 'px';
-        checkCollisions();
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+            checkGoalCollision();
+        }
     });
 
     // Set interval to move obstacles periodically
     setInterval(moveObstacles, 100);
-    
+
     // Initialize the goal position
     setRandomGoalPosition();
+
+    // Function to initialize the ball position without collision with obstacles
+    function initializeBallPosition() {
+        let overlap = true;
+        while (overlap) {
+            // Generate random initial ball position
+            ballX = Math.floor(Math.random() * (gameContainer.clientWidth - ball.clientWidth));
+            ballY = Math.floor(Math.random() * (gameContainer.clientHeight - ball.clientHeight));
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+
+            // Check if the ball collides with any obstacle
+            overlap = false;
+            obstacles.forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                const ballRect = ball.getBoundingClientRect();
+                if (isColliding(ballRect, obstacleRect)) {
+                    overlap = true;
+                }
+            });
+        }
+    }
 });
