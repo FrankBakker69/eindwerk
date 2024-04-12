@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let goalX = 0;
     let goalY = 0;
     let level = 1;
-    let gameRunning = true; // Flag to track if the game is running
+    let gameRunning = true;
 
-    // Function to set a random position for the goal
+    
     function setRandomGoalPosition() {
         const maxX = gameContainer.clientWidth - goal.clientWidth;
         const maxY = gameContainer.clientHeight - goal.clientHeight;
@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
         goal.style.top = goalY + 'px';
     }
 
-    // Function to move the goal using WASD keys
+    
     function moveGoal(direction) {
-        const step = 20; // Adjust movement step size
+        const step = 20; 
         switch (direction) {
             case 'W':
                 goalY = Math.max(goalY - step, 0);
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         goal.style.top = goalY + 'px';
     }
 
-    // Function to move obstacles randomly
+    
     function moveObstacles() {
         obstacles.forEach(obstacle => {
             const obstacleX = parseInt(obstacle.style.left) || 0;
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             obstacle.style.left = Math.max(0, Math.min(maxX, newX)) + 'px';
             obstacle.style.top = Math.max(0, Math.min(maxY, newY)) + 'px';
 
-            // Check collision with ball
+            
             if (gameRunning) { // Only check collision if game is running
                 const ballRect = ball.getBoundingClientRect();
                 const obstacleRect = obstacle.getBoundingClientRect();
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to check collision between ball and goal
+    
     function checkGoalCollision() {
         const ballRect = ball.getBoundingClientRect();
         const goalRect = goal.getBoundingClientRect();
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to detect collision between two elements' rectangles
+    
     function isColliding(rect1, rect2) {
         return !(
             rect1.right < rect2.left ||
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // Event listener for keyboard input
+    
     document.addEventListener('keydown', function(event) {
         if (gameRunning) { // Allow movement only if game is running
             switch (event.key) {
